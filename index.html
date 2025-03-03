@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Kick the Billionaire</title>
+    <link rel="icon" type="image/x-icon" href="/img/favicon.ico" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      value="Interact with a billionaire on a closer level."
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div style="position: relative; display: inline-block">
+      <canvas class="webgl"></canvas>
+
+      <!-- TOP LEFT LOGO -->
+      <div id="top-left-title-container">
+        <div class="basic-column-container">
+          <div id="app-title" class="basic-row-container">
+            KICK THE BILLIONAIRE
+          </div>
+          <div id="money-label" class="basic-row-container">$0</div>
+          <div id="model-loading-label" class="basic-row-container">
+            Loading model...
+          </div>
+        </div>
+      </div>
+
+      <!-- TOP RIGHT TOOLS PANEL -->
+      <div id="top-right-tools-container">
+        <div class="basic-column-container">
+          <img id="settings-button" class="icon-buttons" alt="Settings" />
+          <img id="pin-button" class="icon-buttons" alt="Pin Model" />
+          <img
+            id="reload-scene-button"
+            class="icon-buttons"
+            alt="Reload Scene"
+          />
+        </div>
+      </div>
+
+      <!-- BOTTOM TOOLS PANEL -->
+      <!-- 12 boxes + LR buttons max on desktop -->
+      <!-- 1 box + LR buttons max on mobile -->
+      <div id="bottom-tools-container">
+        <div class="basic-row-container" style="justify-content: center">
+          <img
+            id="get-left-interactions-button"
+            class="icon-buttons"
+            alt="Get Left Interactions"
+          />
+          <div class="basic-row-container" id="interaction-buttons"></div>
+          <img
+            id="get-right-interactions-button"
+            class="icon-buttons"
+            alt="Get Right Interactions"
+          />
+        </div>
+        <div id="settings-container">
+          <div id="world-settings-panel" class="settings-panel">
+            <div class="slide-container">
+              <label id="gravity-slider-label" for="gravity-slider"
+                >GRAVITY</label
+              >
+              <input
+                type="range"
+                min="-10.0"
+                max="10.0"
+                value="0"
+                step="0.01"
+                class="slider"
+                id="gravity-slider"
+              />
+            </div>
+            <div class="checkbox-container">
+              <input
+                type="checkbox"
+                id="dark-mode-checkbox"
+                name="dark-mode-checkbox"
+              />
+              <label id="dark-mode-checkbox-label" for="dark-mode-checkbox"
+                >DARK MODE</label
+              ><br />
+            </div>
+          </div>
+
+          <div id="projectile-settings-panel" class="settings-panel">
+            <div class="select-container">
+              <select id="projectile-type-select">
+                <option value="arrow">ARROW</option>
+                <option value="banana" selected>BANANA</option>
+                <option value="bullet">BULLET</option>
+                <option value="chair">CHAIR</option>
+                <option value="dagger">DAGGER</option>
+                <option value="grenade">GRENADE</option>
+                <option value="missile">MISSILE</option>
+                <option value="poop">POOP</option>
+                <option value="spear">SPEAR</option>
+                <option value="sword">SWORD</option>
+                <option value="syringe">SYRINGE</option>
+                <option value="cybertruck">TRUCK</option>
+                <option value="venusStatue">VENUS</option>
+              </select>
+            </div>
+            <div class="slide-container">
+              <label
+                id="projectile-mass-slider-label"
+                for="projectile-mass-slider"
+                >MASS</label
+              >
+              <input
+                type="range"
+                min="0.1"
+                max="10.0"
+                value="1.0"
+                step="0.01"
+                class="slider"
+                id="projectile-mass-slider"
+              />
+            </div>
+            <div class="slide-container">
+              <label
+                id="projectile-speed-slider-label"
+                for="projectile-speed-slider"
+                >SPEED</label
+              >
+              <input
+                type="range"
+                min="0.1"
+                max="25.0"
+                value="5.0"
+                step="0.01"
+                class="slider"
+                id="projectile-speed-slider"
+              />
+            </div>
+          </div>
+
+          <div id="melee-settings-panel" class="settings-panel">
+            <div class="select-container">
+              <select id="melee-type-select">
+                <option value="baseballBat">BAT</option>
+                <option value="sword" selected>SWORD</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="press-settings-panel" class="settings-panel">
+            <div class="select-container">
+              <select id="press-orientation-select">
+                <option value="horizontal">HORIZONTAL</option>
+                <option value="vertical" selected>VERTICAL</option>
+              </select>
+            </div>
+            <div class="slide-container">
+              <input
+                type="range"
+                min="0.0"
+                max="1.0"
+                value="0.0"
+                step="0.01"
+                class="slider"
+                id="press-compression-percentage-slider"
+              />
+            </div>
+          </div>
+
+          <div id="drawAndQuarter-settings-panel" class="settings-panel">
+            <div class="slide-container">
+              <input
+                type="range"
+                min="0.0"
+                max="1.0"
+                value="0.0"
+                step="0.01"
+                class="slider"
+                id="drawAndQuarter-stretch-percentage-slider"
+              />
+            </div>
+            <div class="slide-container">
+              <input
+                type="range"
+                min="0.0"
+                max="80.0"
+                value="45.0"
+                step="1.0"
+                class="slider"
+                id="drawAndQuarter-angle-slider"
+              />
+            </div>
+          </div>
+
+          <div id="guillotine-settings-panel" class="settings-panel">
+            <div class="slide-container">
+              <input
+                type="range"
+                min="0.0"
+                max="1.0"
+                value="0.0"
+                step="0.01"
+                class="slider"
+                id="guillotine-drop-slider"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js"
+        }
+      }
+    </script>
+    <script type="module" src="app.js"></script>
+  </body>
+</html>

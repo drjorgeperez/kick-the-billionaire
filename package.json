@@ -1,0 +1,17 @@
+{
+  "name": "kick-the-billionaire",
+  "version": "1.0.0",
+  "description": "A game to 'interact' with a billionaire.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Dr. Jorge Perez",
+  "license": "ISC",
+  "dependencies": {
+    "three": "^0.163.0"
+  },
+  "devDependencies": {
+    "vite": "^5.2.8"
+  }
+}
