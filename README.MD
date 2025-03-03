@@ -22,3 +22,5 @@ There are a few areas of work that need contribution
   - Rotating objects, i.e. saw blades
   - Visible explosions
   - Improving melee weapon handling
+  - Electrocution
+  - Limb severance
