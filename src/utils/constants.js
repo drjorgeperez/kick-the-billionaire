@@ -46,10 +46,10 @@ export const INTERACTION = {
   PRESS: "press",
   DRAW_AND_QUARTER: "drawAndQuarter",
   GUILLOTINE: "guillotine",
+  FIRE: "fire",
   FUS_RO_DAH: "fusRoDah",
   GOLDEN_WIND: "goldenWind",
   // ROTATING_BLADES: "rotatingBlades",
-  // FIRE: "fire",
   // SPAWN_PROP: "spawnProp",
   // WATER: "water",
 };
@@ -66,6 +66,7 @@ export const INTERACTION_PAYOUT = {
   [INTERACTION.DRAW_AND_QUARTER]: 2,
   [INTERACTION.GUILLOTINE]: 0,
   [INTERACTION.FUS_RO_DAH]: 100,
+  [INTERACTION.FIRE]: 50,
   [INTERACTION.GOLDEN_WIND]: 100,
 };
 
@@ -96,6 +97,7 @@ export const PROJECTILE_TYPES = {
   CYBERTRUCK: "cybertruck",
   DAGGER: "dagger",
   GRENADE: "grenade",
+  MARS: "mars",
   MISSILE: "missile",
   POOP: "poop",
   SPEAR: "spear",
@@ -140,6 +142,11 @@ export const PROJECTILE_LOCAL_FORWARD = {
     y: 0,
     z: -1,
   },
+  [PROJECTILE_TYPES.MARS]: {
+    x: 0,
+    y: -1,
+    z: 0,
+  },
   [PROJECTILE_TYPES.MISSILE]: {
     x: 0,
     y: 0,
@@ -183,6 +190,7 @@ export const IMPALE_PROJECTILES = [
 
 export const EXPLOSIVE_PROJECTILES = [
   PROJECTILE_TYPES.GRENADE,
+  PROJECTILE_TYPES.MARS,
   PROJECTILE_TYPES.MISSILE,
 ];
 

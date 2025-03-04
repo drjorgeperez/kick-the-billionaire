@@ -9,7 +9,7 @@ import DOMController from "./DOMController.js";
 import SimulationController from "./SimulationController.js";
 
 class AppController {
-  constructor(modelPath, audioPath) {
+  constructor(modelPath, texturePath, audioPath) {
     this.appSettings = {
       darkMode: false,
       darkModeBackgroundColor: COLORS.BLACK,
@@ -27,6 +27,7 @@ class AppController {
     };
     this.simulationController = new SimulationController(
       modelPath,
+      texturePath,
       audioPath,
       this.updateMoney.bind(this),
       this.updateModelLoadingLabel.bind(this)
@@ -119,6 +120,7 @@ class AppController {
       this.toggleGuillotine.bind(this);
     interactionHandlers[INTERACTION.GOLDEN_WIND] =
       this.triggerGoldenWind.bind(this);
+    interactionHandlers[INTERACTION.FIRE] = this.toggleFire.bind(this);
     return interactionHandlers;
   }
 
@@ -282,6 +284,21 @@ class AppController {
       this.simulationController.pins.length
     );
     this.simulationController.handleFusRoDah();
+  }
+
+  toggleFire() {
+    if (this.simulationController.currentClickContext === INTERACTION.FIRE) {
+      this.simulationController.setCurrentClickContext(INTERACTION.NONE);
+      this.domController.setCurrentClickContext(INTERACTION.NONE);
+      this.simulationController.removeFire();
+    } else {
+      this.simulationController.setCurrentClickContext(INTERACTION.FIRE);
+      this.domController.setCurrentClickContext(
+        INTERACTION.FIRE,
+        this.simulationController.pins.length
+      );
+      this.simulationController.createFire();
+    }
   }
 
   triggerGoldenWind() {

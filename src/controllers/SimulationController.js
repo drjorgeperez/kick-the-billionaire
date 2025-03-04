@@ -35,7 +35,13 @@ import {
 import { distance2D } from "../utils/mathUtils.js";
 
 class SimulationController {
-  constructor(modelPath, audioPath, updateMoney, updateModelLoadingLabel) {
+  constructor(
+    modelPath,
+    texturePath,
+    audioPath,
+    updateMoney,
+    updateModelLoadingLabel
+  ) {
     ////////// GLOBAL //////////
     this.canvas = document.querySelector("canvas.webgl");
     this.onMobile = mobileCheck();
@@ -75,8 +81,10 @@ class SimulationController {
     this.DEBUG = true;
 
     ////////// THREE //////////
+    this.texturePath = texturePath;
     this.gltfLoader = new GLTFLoader().setPath(modelPath);
     this.fbxLoader = new FBXLoader().setPath(modelPath);
+    this.textureLoader = new THREE.TextureLoader();
     this.raycaster = new THREE.Raycaster();
     this.pointer = new THREE.Vector2();
     this.camera = this.createCamera(75, 0.01, 100, {
@@ -135,6 +143,8 @@ class SimulationController {
     this.guillotineMesh = null;
     this.meleeWeapon = null;
     this.freezeConstraints = [];
+    this.fire = null;
+    this.fireTexture = null;
 
     ////////// CANNON //////////
     this.world = this.createWorld();
@@ -152,6 +162,9 @@ class SimulationController {
     this.getPropMesh(this.simulationSettings.projectileType);
     this.getPropMesh(this.simulationSettings.meleeType);
     this.loadGuillotineMesh();
+    this.textureLoader.load(`${this.texturePath}/fire.png`, (fireTexture) => {
+      this.fireTexture = fireTexture;
+    });
   }
 
   onWindowResize() {
@@ -467,6 +480,16 @@ class SimulationController {
     this.guillotine?.updateSimple();
     this.moveMeleeWeaponPivot();
     this.meleeWeapon?.updateSimple();
+    if (this.fire) {
+      this.fire.model.update(performance.now() / 1000);
+      if (
+        this.fire.model.position.distanceTo(
+          this.dummy.getBodyPosition("pelvis")
+        ) < 1
+      ) {
+        this.updateMoney(INTERACTION_PAYOUT[INTERACTION.FIRE]);
+      }
+    }
   }
 
   createDummyRagdoll(dummyModel, ragdollType, dummyBodiesData) {
@@ -1098,6 +1121,25 @@ class SimulationController {
     this.interactionsController.swingMeleeWeapon(
       this.meleeWeapon.bodiesMap[this.simulationSettings.meleeType]
     );
+  }
+
+  removeFire() {
+    this.removeThing(this.fire);
+    this.fire = null;
+  }
+
+  createFire() {
+    if (!this.fireTexture) return;
+    if (this.fire) this.removeFire();
+    this.fire = this.interactionsController.createFire(
+      this.dummy,
+      this.fireTexture
+    );
+    this.scene.add(this.fire.model);
+    this.fire.getBodies().forEach((body) => {
+      if (!body) return;
+      this.world.addBody(body);
+    });
   }
   ////////// EVENT HANDLERS //////////
 }

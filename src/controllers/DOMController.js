@@ -6,6 +6,7 @@ import {
   createChevronRightIconSvg,
   createCloseIconSvg,
   createCompressIconSvg,
+  createFireIconSvg,
   createFreezeIconSvg,
   createPanToolIconSvg,
   createPushPinIconSvg,
@@ -275,6 +276,9 @@ class DOMController {
       case INTERACTION.GOLDEN_WIND:
         iconSvg = createSportsMartialArtsIconSvg(iconColor);
         break;
+      case INTERACTION.FIRE:
+        iconSvg = createFireIconSvg(iconColor);
+        break;
       default:
         break;
     }
@@ -401,6 +405,7 @@ class DOMController {
       INTERACTION.FUS_RO_DAH,
       INTERACTION.FREEZE,
       INTERACTION.GOLDEN_WIND,
+      INTERACTION.FIRE,
     ];
     if (interactionsWithSettings.includes(previousClickContext)) {
       this.updateToggledInteractionButtonStyle(previousClickContext, false);

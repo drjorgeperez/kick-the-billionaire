@@ -17,6 +17,7 @@ import { sleep } from "../utils/utils.js";
 import { createMeshWithEdges } from "../utils/modelUtils.js";
 import { degreesToRadians } from "../utils/mathUtils.js";
 import { getConeTwistConstraintPivotsFromWorldPivotPoint } from "../utils/ragdollUtils.js";
+import ThreeFire from "../libs/fire/Fire.js";
 
 class InteractionsController {
   constructor(audioPath, updateMoney) {
@@ -961,6 +962,32 @@ class InteractionsController {
       });
       this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND] * 100);
     });
+  }
+
+  createFire(dummy, fireTexture) {
+    const dummyBody = dummy.bodiesMap["upperBody"];
+    const fireName = "fire";
+    const fireBody = new CANNON.Body({ mass: 0 });
+    fireBody.position.set(dummyBody.position.x, 1.5, dummyBody.position.z);
+    const fireMesh = new ThreeFire(fireTexture);
+    fireMesh.name = fireName;
+    fireMesh.position.copy(fireBody.position);
+    fireMesh.scale.set(1.5, 3, 1.5);
+    const fireGroup = new THREE.Group();
+    fireGroup.add(fireMesh);
+
+    const bodiesMap = { [fireName]: fireBody };
+    const modelSettings = {
+      bonesToParentToBodies: [fireName],
+      bodiesData: {
+        [fireName]: {
+          boneName: fireName,
+        },
+      },
+    };
+    const fire = new PhysicalThing(fireMesh, modelSettings);
+    fire.addBodies(bodiesMap);
+    return fire;
   }
 }
 

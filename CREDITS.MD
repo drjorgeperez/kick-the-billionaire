@@ -1,3 +1,7 @@
+# Libraries
+
+Fire.js and FireShader.js by [mattatz](http://github.com/mattatz)
+
 # SVG
 
 [Ball Pile SVG Vector](https://www.svgrepo.com/svg/532249/ball-pile) by Dazzle UI
@@ -23,6 +27,8 @@
 [grenade.glb](https://www.cgtrader.com/free-3d-models/military/rocketry/low-poly-grenade-textured-and-not-textured) by kingcreeper
 
 [guillotine.glb](https://cults3d.com/en/3d-model/tool/guillotine-low-poly-3d-model) by 3Dmodels3D
+
+[mars.glb](https://free3d.com/3d-model/low-poly-planet-mars-52164.html) by tyrosmith
 
 [missile.glb](https://www.cgtrader.com/free-3d-models/military/rocketry/mim-104-patriot-missle) by round
 
