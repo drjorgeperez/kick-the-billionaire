@@ -16,6 +16,8 @@
 
 **Guillotine** - spawns a guillotine and resets the dummy's position so that it lays down on it. Use a slider to move the guillotine's blade.
 
+**Fire** - spawns a fire underneath the dummy.
+
 **Fus Ro Dah** - generates a repelling force that knocks the dummy in the direction the camera is facing
 
 **Golden Wind** - simulates the Giorno vs. Cioccolata fight from the anime JoJo's Bizarre Adventure where the dummy is Cioccolata
