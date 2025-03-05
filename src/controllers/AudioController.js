@@ -1,51 +1,57 @@
 class AudioController {
   constructor(audioPath) {
     this.audioPath = audioPath;
-    this.currentAudioName = null;
-    this.currentAudio = null;
-    this.audioPlaying = false;
     this.audioCache = {};
   }
 
-  createAudio(audio) {
-    const audioFileName = audio.fileName;
-    const audioFileType = audio.fileType;
+  createAudio(audioFileName, audioFileType) {
     return new Audio(`${this.audioPath}${audioFileName}.${audioFileType}`);
   }
 
-  setAudio(audio) {
-    const audioFileName = audio.fileName;
-    if (!this.audioCache[audioFileName]) {
-      this.audioCache[audioFileName] = this.createAudio(audio);
+  resetAudio(audioFileName) {
+    if (this.audioCache[audioFileName]) {
+      this.audioCache[audioFileName].currentTime = 0;
     }
-    this.currentAudio = this.audioCache[audioFileName];
-    this.currentAudioName = audioFileName;
   }
 
-  startAudio() {
-    if (this.currentAudio === null || this.audioPlaying) return;
-    return this.currentAudio.play();
+  startAudio(audioFileName, audioFileType = "mp3", reset = true, loop = false) {
+    if (!this.audioCache[audioFileName]) {
+      this.audioCache[audioFileName] = this.createAudio(
+        audioFileName,
+        audioFileType
+      );
+    }
+    if (reset) this.resetAudio(audioFileName);
+    this.audioCache[audioFileName].loop = loop;
+    return this.audioCache[audioFileName].play();
   }
 
-  pauseAudio() {
-    if (this.currentAudio === null || !this.audioPlaying) return;
-    this.currentAudio.pause();
+  pauseAudio(audioFileName) {
+    if (!this.audioCache[audioFileName]) return;
+    this.audioCache[audioFileName].pause();
   }
 
-  stopAudio() {
-    if (this.currentAudio === null) return;
-    this.currentAudio.pause();
-    this.currentAudio.currentTime = 0;
+  pauseAllAudio() {
+    Object.values(this.audioCache).forEach((audio) => {
+      audio.pause();
+    });
   }
 
-  isAudioOver() {
-    if (this.currentAudio === null) return false;
-    return this.currentAudio.ended;
+  stopAudio(audioFilename) {
+    if (!this.audioCache[audioFilename]) return;
+    this.audioCache[audioFilename].pause();
+    this.audioCache[audioFilename].currentTime = 0;
   }
 
-  getAudioCurrentTime() {
-    if (this.currentAudio === null) return 0;
-    return this.currentAudio.currentTime;
+  stopAllAudio() {
+    Object.keys(this.audioCache).forEach((audioFilename) => {
+      this.stopAudio(audioFilename);
+    });
+  }
+
+  getAudioCurrentTime(audioFileName) {
+    if (!this.audioCache[audioFileName]) return;
+    return this.audioCache[audioFileName].currentTime;
   }
 }
 

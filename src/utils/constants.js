@@ -1,3 +1,5 @@
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.module.js";
+
 export const GAME_STATE_LOCAL_STORAGE_KEY = "KickTheBillionaireGameState";
 
 export const COLORS = {
@@ -47,6 +49,7 @@ export const INTERACTION = {
   DRAW_AND_QUARTER: "drawAndQuarter",
   GUILLOTINE: "guillotine",
   FIRE: "fire",
+  LIGHTNING: "lightning",
   FUS_RO_DAH: "fusRoDah",
   GOLDEN_WIND: "goldenWind",
   // ROTATING_BLADES: "rotatingBlades",
@@ -67,6 +70,7 @@ export const INTERACTION_PAYOUT = {
   [INTERACTION.GUILLOTINE]: 0,
   [INTERACTION.FUS_RO_DAH]: 100,
   [INTERACTION.FIRE]: 50,
+  [INTERACTION.LIGHTNING]: 25,
   [INTERACTION.GOLDEN_WIND]: 100,
 };
 
@@ -94,12 +98,15 @@ export const PROJECTILE_TYPES = {
   BANANA: "banana",
   BULLET: "bullet",
   CHAIR: "chair",
+  CIRCULAR_SAW_BLADE: "circularSawBlade",
   CYBERTRUCK: "cybertruck",
   DAGGER: "dagger",
   GRENADE: "grenade",
+  KATANA: "katana",
   MARS: "mars",
   MISSILE: "missile",
   POOP: "poop",
+  SHURIKEN: "giantShuriken",
   SPEAR: "spear",
   SWORD: "sword",
   SYRINGE: "syringe",
@@ -127,6 +134,11 @@ export const PROJECTILE_LOCAL_FORWARD = {
     y: 0,
     z: -1,
   },
+  [PROJECTILE_TYPES.CIRCULAR_SAW_BLADE]: {
+    x: 0,
+    y: 0,
+    z: -1,
+  },
   [PROJECTILE_TYPES.CYBERTRUCK]: {
     x: 0,
     y: 0,
@@ -142,6 +154,11 @@ export const PROJECTILE_LOCAL_FORWARD = {
     y: 0,
     z: -1,
   },
+  [PROJECTILE_TYPES.KATANA]: {
+    x: -1,
+    y: 0,
+    z: 0,
+  },
   [PROJECTILE_TYPES.MARS]: {
     x: 0,
     y: -1,
@@ -153,6 +170,11 @@ export const PROJECTILE_LOCAL_FORWARD = {
     z: -1,
   },
   [PROJECTILE_TYPES.POOP]: {
+    x: 0,
+    y: 0,
+    z: -1,
+  },
+  [PROJECTILE_TYPES.SHURIKEN]: {
     x: 0,
     y: 0,
     z: -1,
@@ -181,7 +203,9 @@ export const PROJECTILE_LOCAL_FORWARD = {
 
 export const IMPALE_PROJECTILES = [
   PROJECTILE_TYPES.ARROW,
+  PROJECTILE_TYPES.CIRCULAR_SAW_BLADE,
   PROJECTILE_TYPES.DAGGER,
+  PROJECTILE_TYPES.KATANA,
   PROJECTILE_TYPES.POOP,
   PROJECTILE_TYPES.SPEAR,
   PROJECTILE_TYPES.SWORD,
@@ -199,6 +223,11 @@ export const EXPLOSIVE_PROJECTILE_PARAMETERS = {
   explosionForce: 2,
   explosionRadius: 5,
 };
+
+export const SPINNING_PROJECTILES = [
+  PROJECTILE_TYPES.CIRCULAR_SAW_BLADE,
+  PROJECTILE_TYPES.SHURIKEN,
+];
 
 export const PRESS_ORIENTATION = {
   VERTICAL: "vertical",
@@ -228,4 +257,54 @@ export const DRAW_AND_QUARTER_ATTRIBUTES = {
   MIN_STRETCH: 1,
   MAX_STRETCH: 2,
   DUMMY_PIVOT: "upperBody",
+};
+
+export const DEFAULT_LIGHTNING_RAY_PARAMS = {
+  sourceOffset: new THREE.Vector3(),
+  destOffset: new THREE.Vector3(),
+  radius0: 0.05,
+  radius1: 0.05,
+  minRadius: 2.5,
+  maxIterations: 7,
+  isEternal: true,
+
+  timeScale: 0.7,
+
+  propagationTimeFactor: 0.05,
+  vanishingTimeFactor: 0.95,
+  subrayPeriod: 3.5,
+  subrayDutyCycle: 0.6,
+  maxSubrayRecursion: 3,
+  ramification: 7,
+  recursionProbability: 0.6,
+
+  roughness: 0.85,
+  straightness: 0.6,
+};
+
+export const SOUNDS = {
+  EXPLOSION: {
+    fileName: "explosion",
+    fileType: "mp3",
+  },
+  GUNSHOT: {
+    fileName: "gunshot",
+    fileType: "mp3",
+  },
+  FUS_RO_DAH: {
+    fileName: "fusRoDah",
+    fileType: "mp3",
+  },
+  GOLDEN_WIND: {
+    fileName: "goldenWind",
+    fileType: "mp3",
+  },
+  LIGHTNING: {
+    fileName: "lightning",
+    fileType: "mp3",
+  },
+  PUNCH: {
+    fileName: "punch",
+    fileType: "mp3",
+  },
 };

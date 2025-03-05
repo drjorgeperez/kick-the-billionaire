@@ -11,6 +11,8 @@ import {
   PRESS_NAMES,
   PRESS_ORIENTATION,
   PROJECTILE_LOCAL_FORWARD,
+  SOUNDS,
+  SPINNING_PROJECTILES,
 } from "../utils/constants.js";
 import AudioController from "./AudioController.js";
 import { sleep } from "../utils/utils.js";
@@ -96,27 +98,22 @@ class InteractionsController {
       cameraDirection.z
     );
     windDir.scale(windStrength, windDir);
-    const sound = {
-      soundName: "fusRoDah",
-      soundType: "mp3",
-    };
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
+    this.audioController
+      .startAudio(SOUNDS.FUS_RO_DAH.fileName)
+      ?.then(async () => {
+        while (
+          this.audioController.getAudioCurrentTime(SOUNDS.FUS_RO_DAH.fileName) <
+          1
+        ) {
+          await sleep(100);
+        }
+        model.applyImpulse([], {
+          x: windDir.x,
+          y: windDir.y,
+          z: windDir.z,
+        });
+        this.updateMoney(INTERACTION_PAYOUT[INTERACTION.FUS_RO_DAH]);
       });
-    this.audioController.stopAudio();
-    this.audioController.startAudio()?.then(async () => {
-      while (this.audioController.getAudioCurrentTime() < 1) {
-        await sleep(100);
-      }
-      model.applyImpulse([], {
-        x: windDir.x,
-        y: windDir.y,
-        z: windDir.z,
-      });
-      this.updateMoney(INTERACTION_PAYOUT[INTERACTION.FUS_RO_DAH]);
-    });
   }
 
   createProjectile(
@@ -150,6 +147,7 @@ class InteractionsController {
       throwDirection.y,
       throwDirection.z
     );
+    if (SPINNING_PROJECTILES.includes(projectileName)) direction3.y = 0;
     direction3.normalize();
     let projectileLocalForward = PROJECTILE_LOCAL_FORWARD[projectileName];
     if (!projectileLocalForward) projectileLocalForward = { x: 0, y: 0, z: -1 };
@@ -163,6 +161,15 @@ class InteractionsController {
       direction3
     );
     projectileBody.quaternion.set(quat.x, quat.y, quat.z, quat.w);
+
+    if (SPINNING_PROJECTILES.includes(projectileName)) {
+      const angularVelocity = new CANNON.Vec3(0, 25, 0);
+      projectileBody.angularVelocity.set(
+        angularVelocity.x,
+        angularVelocity.y,
+        angularVelocity.z
+      );
+    }
 
     const bodiesMap = { [projectileName]: projectileBody };
     const modelSettings = {
@@ -537,16 +544,7 @@ class InteractionsController {
       cameraDirection.z
     );
     punchDir.scale(punchStrength, punchDir);
-    const sound = {
-      soundName: "punch",
-      soundType: "mp3",
-    };
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
-      });
-    this.audioController.startAudio()?.then(async () => {
+    this.audioController.startAudio(SOUNDS.PUNCH.fileName)?.then(async () => {
       model.applyImpulse(bodyNames, {
         x: punchDir.x,
         y: punchDir.y,
@@ -655,45 +653,18 @@ class InteractionsController {
 
   playHurtSound() {
     const randomGruntSoundIndex = Math.floor(Math.random() * 5) + 1;
-    const sound = {
-      soundName: `grunt${randomGruntSoundIndex}`,
-      soundType: "mp3",
-    };
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
-      });
-    this.audioController.startAudio();
+    const soundName = `grunt${randomGruntSoundIndex}`;
+    this.audioController.startAudio(soundName);
   }
 
   playExplosionSound(callback = () => {}) {
-    const sound = {
-      soundName: "explosion",
-      soundType: "mp3",
-    };
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
-      });
-    this.audioController.startAudio()?.then(() => {
+    this.audioController.startAudio(SOUNDS.EXPLOSION.fileName)?.then(() => {
       callback();
     });
   }
 
   playGunshotSound() {
-    const sound = {
-      soundName: "gunshot",
-      soundType: "mp3",
-    };
-    this.audioController.stopAudio();
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
-      });
-    this.audioController.startAudio();
+    this.audioController.startAudio(SOUNDS.GUNSHOT.fileName);
   }
 
   createMeleeWeapon(
@@ -900,68 +871,73 @@ class InteractionsController {
     );
     const windStrenth = 10;
     windDir.scale(windStrenth, windDir);
-    const sound = {
-      soundName: "goldenWind",
-      soundType: "mp3",
-    };
-    if (this.audioController.currentAudioName != sound.soundName)
-      this.audioController.setAudio({
-        fileName: sound.soundName,
-        fileType: sound.soundType,
-      });
-    this.audioController.stopAudio();
-    this.audioController.startAudio()?.then(async () => {
-      while (this.audioController.getAudioCurrentTime() < 12) {
-        await sleep(100);
-      }
-      while (this.audioController.getAudioCurrentTime() < 27) {
-        const randomBodyPartName =
-          dummy.bodyNames[Math.floor(Math.random() * dummy.bodyNames.length)];
+    this.audioController.stopAllAudio();
+    this.audioController
+      .startAudio(SOUNDS.GOLDEN_WIND.fileName)
+      ?.then(async () => {
+        while (
+          this.audioController.getAudioCurrentTime(
+            SOUNDS.GOLDEN_WIND.fileName
+          ) < 12
+        ) {
+          await sleep(100);
+        }
+        while (
+          this.audioController.getAudioCurrentTime(
+            SOUNDS.GOLDEN_WIND.fileName
+          ) < 27
+        ) {
+          const randomBodyPartName =
+            dummy.bodyNames[Math.floor(Math.random() * dummy.bodyNames.length)];
+          windDir = new CANNON.Vec3(
+            cameraDirection.x,
+            cameraDirection.y,
+            cameraDirection.z
+          );
+          windDir.scale(windStrenth, windDir);
+          dummy.applyImpulse([randomBodyPartName], {
+            x: windDir.x,
+            y: windDir.y,
+            z: windDir.z,
+          });
+          this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND]);
+          await sleep(50);
+        }
+        while (
+          this.audioController.getAudioCurrentTime(
+            SOUNDS.GOLDEN_WIND.fileName
+          ) < 41
+        ) {
+          const randomBodyPartName =
+            dummy.bodyNames[Math.floor(Math.random() * dummy.bodyNames.length)];
+          windDir = new CANNON.Vec3(
+            cameraDirection.x,
+            cameraDirection.y,
+            cameraDirection.z
+          );
+          windDir.scale(windStrenth, windDir);
+          dummy.applyImpulse([randomBodyPartName], {
+            x: windDir.x,
+            y: windDir.y,
+            z: windDir.z,
+          });
+          this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND]);
+          await sleep(25);
+        }
+        removePins();
         windDir = new CANNON.Vec3(
           cameraDirection.x,
           cameraDirection.y,
           cameraDirection.z
         );
         windDir.scale(windStrenth, windDir);
-        dummy.applyImpulse([randomBodyPartName], {
-          x: windDir.x,
-          y: windDir.y,
-          z: windDir.z,
+        dummy.applyImpulse(["upperBody"], {
+          x: windDir.x * 10,
+          y: windDir.y * 10,
+          z: windDir.z * 10,
         });
-        this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND]);
-        await sleep(50);
-      }
-      while (this.audioController.getAudioCurrentTime() < 41) {
-        const randomBodyPartName =
-          dummy.bodyNames[Math.floor(Math.random() * dummy.bodyNames.length)];
-        windDir = new CANNON.Vec3(
-          cameraDirection.x,
-          cameraDirection.y,
-          cameraDirection.z
-        );
-        windDir.scale(windStrenth, windDir);
-        dummy.applyImpulse([randomBodyPartName], {
-          x: windDir.x,
-          y: windDir.y,
-          z: windDir.z,
-        });
-        this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND]);
-        await sleep(25);
-      }
-      removePins();
-      windDir = new CANNON.Vec3(
-        cameraDirection.x,
-        cameraDirection.y,
-        cameraDirection.z
-      );
-      windDir.scale(windStrenth, windDir);
-      dummy.applyImpulse(["upperBody"], {
-        x: windDir.x * 10,
-        y: windDir.y * 10,
-        z: windDir.z * 10,
+        this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND] * 100);
       });
-      this.updateMoney(INTERACTION_PAYOUT[INTERACTION.GOLDEN_WIND] * 100);
-    });
   }
 
   createFire(dummy, fireTexture) {
@@ -988,6 +964,19 @@ class InteractionsController {
     const fire = new PhysicalThing(fireMesh, modelSettings);
     fire.addBodies(bodiesMap);
     return fire;
+  }
+
+  playLightningAudio() {
+    this.audioController.startAudio(
+      SOUNDS.LIGHTNING.fileName,
+      SOUNDS.LIGHTNING.fileType,
+      true,
+      true
+    );
+  }
+
+  stopLightningAudio() {
+    this.audioController.stopAudio(SOUNDS.LIGHTNING.fileName);
   }
 }
 

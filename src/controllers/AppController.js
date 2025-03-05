@@ -76,7 +76,8 @@ class AppController {
       this.changePressType.bind(this),
       this.updateMeleeSettings.bind(this),
       this.moveDrawAndQuarter.bind(this),
-      this.moveGuillotineBlade.bind(this)
+      this.moveGuillotineBlade.bind(this),
+      this.changeLightningColor.bind(this)
     );
     this.domController.onLoad(this.appSettings);
     this.simulationController.initializeThreeScene();
@@ -121,6 +122,8 @@ class AppController {
     interactionHandlers[INTERACTION.GOLDEN_WIND] =
       this.triggerGoldenWind.bind(this);
     interactionHandlers[INTERACTION.FIRE] = this.toggleFire.bind(this);
+    interactionHandlers[INTERACTION.LIGHTNING] =
+      this.toggleLightning.bind(this);
     return interactionHandlers;
   }
 
@@ -301,6 +304,33 @@ class AppController {
     }
   }
 
+  changeLightningColor(newLightningColor, newLightningOutlineColor) {
+    this.simulationController.changeLightningColor(
+      newLightningColor,
+      newLightningOutlineColor
+    );
+  }
+
+  toggleLightning() {
+    if (
+      this.simulationController.currentClickContext === INTERACTION.LIGHTNING
+    ) {
+      this.simulationController.setCurrentClickContext(INTERACTION.NONE);
+      this.domController.setCurrentClickContext(INTERACTION.NONE);
+      this.simulationController.removeLightning();
+    } else {
+      this.simulationController.setCurrentClickContext(INTERACTION.LIGHTNING);
+      this.domController.setCurrentClickContext(
+        INTERACTION.LIGHTNING,
+        this.simulationController.pins.length
+      );
+      this.simulationController.createLightning(
+        this.domController.lightningColorSelect.value,
+        this.domController.lightningOutlineColorSelect.value
+      );
+    }
+  }
+
   triggerGoldenWind() {
     this.simulationController.setCurrentClickContext(INTERACTION.NONE);
     this.domController.setCurrentClickContext(
@@ -397,6 +427,12 @@ class AppController {
         this.domController.handleGetNextInteractions();
         break;
       case ",":
+        this.domController.handleGetPreviousInteractions();
+        break;
+      case "e":
+        this.domController.handleGetNextInteractions();
+        break;
+      case "q":
         this.domController.handleGetPreviousInteractions();
         break;
       case "Escape":

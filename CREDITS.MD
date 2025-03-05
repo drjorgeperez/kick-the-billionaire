@@ -2,6 +2,8 @@
 
 Fire.js and FireShader.js by [mattatz](http://github.com/mattatz)
 
+LightningStrike.js and SimplexNoise.js by [yomboprime](https://github.com/yomboprime)
+
 # SVG
 
 [Ball Pile SVG Vector](https://www.svgrepo.com/svg/532249/ball-pile) by Dazzle UI
@@ -20,13 +22,19 @@ Fire.js and FireShader.js by [mattatz](http://github.com/mattatz)
 
 [chair.glb](https://www.turbosquid.com/3d-models/chair-2249903) by Denis Gomez
 
+[circularSawBlade.glb](https://sketchfab.com/3d-models/circular-saw-blade-219c51b8284345568e4a5a80156125ef) by YouniqueĪdeaStudio
+
 [cybertruck.glb](https://www.cgtrader.com/free-3d-models/car/suv/tesla-cybertruck-low-poly-210fa75b-9d4a-4e5c-bf1d-157e24eaed45) by sergryabokin
 
 [dagger.glb](https://sketchfab.com/3d-models/kama-dagger-f5236789a5094b8fa1d800ffdb29dfa6) by Arms Museum
 
+[giantShuriken.glb](https://sketchfab.com/3d-models/big-ninja-shuriken-aa7068a1de2541488182be52fbe0f592) by Sir Erdees
+
 [grenade.glb](https://www.cgtrader.com/free-3d-models/military/rocketry/low-poly-grenade-textured-and-not-textured) by kingcreeper
 
 [guillotine.glb](https://cults3d.com/en/3d-model/tool/guillotine-low-poly-3d-model) by 3Dmodels3D
+
+[katana.glb](https://cults3d.com/en/users/dylan_3d_print/3d-models) by dylan_3d_print
 
 [mars.glb](https://free3d.com/3d-model/low-poly-planet-mars-52164.html) by tyrosmith
 

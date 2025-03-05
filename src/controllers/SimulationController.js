@@ -2,10 +2,17 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.163.0/build/three.m
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/controls/OrbitControls.js";
 import { GLTFLoader } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/loaders/GLTFLoader.js";
 import { FBXLoader } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/loaders/FBXLoader.js";
+import { EffectComposer } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/EffectComposer.js";
+import { OutlinePass } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/OutlinePass.js";
+import { RenderPass } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/RenderPass.js";
+import { ShaderPass } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/postprocessing/ShaderPass.js";
+import { GammaCorrectionShader } from "https://cdn.jsdelivr.net/npm/three@0.163.0/examples/jsm/shaders/GammaCorrectionShader.js";
+import { LightningStrike } from "../libs/lightning/LightningStrike.js";
 import * as CANNON from "https://cdn.jsdelivr.net/npm/cannon-es@0.20.0/+esm";
 import { mobileCheck } from "../utils/utils.js";
 import {
   COLORS,
+  DEFAULT_LIGHTNING_RAY_PARAMS,
   DRAW_AND_QUARTER_ATTRIBUTES,
   EXPLOSIVE_PROJECTILE_PARAMETERS,
   EXPLOSIVE_PROJECTILES,
@@ -94,6 +101,7 @@ class SimulationController {
     });
     this.scene = this.createScene(COLORS.WHITE);
     this.renderer = this.createRenderer();
+    this.composer = this.createComposer(this.renderer, this.scene, this.camera);
     this.controls = this.createControls(true, false, false);
     this.controlsTargetOffset = {
       x: 0,
@@ -145,6 +153,9 @@ class SimulationController {
     this.freezeConstraints = [];
     this.fire = null;
     this.fireTexture = null;
+    this.lightningStrike = null;
+    this.lightningStrikeMesh = null;
+    this.lightningOutlineMeshArray = [];
 
     ////////// CANNON //////////
     this.world = this.createWorld();
@@ -236,7 +247,9 @@ class SimulationController {
   render() {
     this.controls.update();
     this.updateWorldPhysics();
-    this.renderer.render(this.scene, this.camera);
+    if (this.lightningStrike) this.updateLightning(performance.now() / 500);
+    this.composer.render();
+    // this.renderer.render(this.scene, this.camera);
     window.requestAnimationFrame(this.render.bind(this));
   }
 
@@ -271,6 +284,13 @@ class SimulationController {
     renderer.setSize(this.windowSizes.width, this.windowSizes.height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     return renderer;
+  }
+
+  createComposer(renderer, scene, camera) {
+    const composer = new EffectComposer(renderer);
+    composer.passes = [];
+    composer.addPass(new RenderPass(scene, camera));
+    return composer;
   }
 
   createControls(enableZoom, enableDamping, autoRotate) {
@@ -1140,6 +1160,102 @@ class SimulationController {
       if (!body) return;
       this.world.addBody(body);
     });
+  }
+
+  changeLightningColor(lightningColor, lightningOutlineColor) {
+    this.removeLightning();
+    this.createLightning(lightningColor, lightningOutlineColor);
+  }
+
+  removeLightning() {
+    if (this.lightningStrikeMesh) {
+      this.scene.remove(this.lightningStrikeMesh);
+    }
+    this.lightningStrikeMesh = null;
+    this.lightningStrike = null;
+    this.composer = this.createComposer(this.renderer, this.scene, this.camera);
+    this.interactionsController.stopLightningAudio();
+  }
+
+  recreateRay(lightningColor) {
+    if (this.lightningStrikeMesh) {
+      this.scene.remove(this.lightningStrikeMesh);
+    }
+    this.lightningStrike = new LightningStrike(DEFAULT_LIGHTNING_RAY_PARAMS);
+    const lightningMaterial = new THREE.MeshBasicMaterial({
+      color: new THREE.Color(lightningColor),
+    });
+    this.lightningStrikeMesh = new THREE.Mesh(
+      this.lightningStrike,
+      lightningMaterial
+    );
+    this.lightningOutlineMeshArray.length = 0;
+    this.lightningOutlineMeshArray.push(this.lightningStrikeMesh);
+    this.scene.add(this.lightningStrikeMesh);
+  }
+
+  createLightningOutline(scene, camera, composer, objectsArray, visibleColor) {
+    const lightningOutlinePass = new OutlinePass(
+      new THREE.Vector2(window.innerWidth, window.innerHeight),
+      scene,
+      camera,
+      objectsArray
+    );
+    lightningOutlinePass.edgeStrength = 2.5;
+    lightningOutlinePass.edgeGlow = 0.7;
+    lightningOutlinePass.edgeThickness = 2.8;
+    lightningOutlinePass.visibleEdgeColor = visibleColor;
+    lightningOutlinePass.hiddenEdgeColor.set(0);
+    lightningOutlinePass.renderToScreen = true;
+    return lightningOutlinePass;
+  }
+
+  createLightning(lightningColor, lightningOutlineColor) {
+    this.recreateRay(lightningColor);
+    this.composer = this.createComposer(this.renderer, this.scene, this.camera);
+    const lightningOutlinePass = this.createLightningOutline(
+      this.scene,
+      this.camera,
+      this.composer,
+      this.lightningOutlineMeshArray,
+      new THREE.Color(lightningOutlineColor)
+    );
+    this.composer.addPass(lightningOutlinePass);
+    const gammaCorrection = new ShaderPass(GammaCorrectionShader);
+    this.composer.addPass(gammaCorrection);
+    this.interactionsController.playLightningAudio();
+  }
+
+  updateLightning(time) {
+    if (this.dummy && this.lightningStrike) {
+      const cameraPosition = this.camera.position;
+      const dummyPosition = this.dummy.getBodyPosition("upperBody");
+      this.lightningStrike.rayParameters.sourceOffset.copy(cameraPosition);
+      this.lightningStrike.rayParameters.sourceOffset.y -= 1;
+      this.lightningStrike.rayParameters.destOffset.copy(dummyPosition);
+      this.lightningStrike.update(time);
+
+      const randomBodyPartName =
+        this.dummy.bodyNames[
+          Math.floor(Math.random() * this.dummy.bodyNames.length)
+        ];
+      const randomShockDirectionX = -1 + Math.random() * 2;
+      const randomShockDirectionY = -1 + Math.random() * 2;
+      const randomShockDirectionZ = -1 + Math.random() * 2;
+      const shockDirection = new CANNON.Vec3(
+        randomShockDirectionX,
+        randomShockDirectionY,
+        randomShockDirectionZ
+      );
+      const shockStrength = 0.5;
+      shockDirection.scale(shockStrength, shockDirection);
+      this.dummy.applyImpulse([randomBodyPartName], {
+        x: shockDirection.x,
+        y: shockDirection.y,
+        z: shockDirection.z,
+      });
+      this.updateMoney(INTERACTION_PAYOUT[INTERACTION.LIGHTNING]);
+    }
   }
   ////////// EVENT HANDLERS //////////
 }

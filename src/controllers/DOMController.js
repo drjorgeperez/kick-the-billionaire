@@ -3,6 +3,7 @@ import {
   creatChevronLeftIconSvg,
   createBallPileIconSvg,
   createBaseballIconSvg,
+  createBoltIconSvg,
   createChevronRightIconSvg,
   createCloseIconSvg,
   createCompressIconSvg,
@@ -77,6 +78,15 @@ class DOMController {
     );
     this.guillotineDropSlider = document.getElementById(
       "guillotine-drop-slider"
+    );
+    this.lightningSettingsPanel = document.getElementById(
+      "lightning-settings-panel"
+    );
+    this.lightningColorSelect = document.getElementById(
+      "lightning-color-select"
+    );
+    this.lightningOutlineColorSelect = document.getElementById(
+      "lightning-outline-color-select"
     );
     this.settingsElements = this.registerSettingsElements();
     this.getLeftInteractionsButton = document.getElementById(
@@ -279,6 +289,9 @@ class DOMController {
       case INTERACTION.FIRE:
         iconSvg = createFireIconSvg(iconColor);
         break;
+      case INTERACTION.LIGHTNING:
+        iconSvg = createBoltIconSvg(iconColor);
+        break;
       default:
         break;
     }
@@ -398,6 +411,7 @@ class DOMController {
       INTERACTION.PRESS,
       INTERACTION.DRAW_AND_QUARTER,
       INTERACTION.GUILLOTINE,
+      INTERACTION.LIGHTNING,
     ];
     const standardInteractions = [
       INTERACTION.DRAG_DUMMY,
@@ -484,6 +498,7 @@ class DOMController {
     settingsElements[this.pressSettingsPanel.id] = {};
     settingsElements[this.drawAndQuarterSettingsPanel.id] = {};
     settingsElements[this.guillotineSettingsPanel.id] = {};
+    settingsElements[this.lightningSettingsPanel.id] = {};
     return settingsElements;
   }
 
@@ -504,7 +519,8 @@ class DOMController {
     changePressType,
     updateMeleeSettings,
     moveDrawAndQuarter,
-    moveGuillotineBlade
+    moveGuillotineBlade,
+    changeLightningColor
   ) {
     this.interactionHandlers = interactionHandlers;
     this.settingsButton.addEventListener("click", toggleWorldSettingsPanel);
@@ -559,6 +575,15 @@ class DOMController {
     );
     this.guillotineDropSlider.addEventListener("input", (event) =>
       moveGuillotineBlade(event.target.value)
+    );
+    this.lightningColorSelect.addEventListener("change", (event) =>
+      changeLightningColor(
+        event.target.value,
+        this.lightningOutlineColorSelect.value
+      )
+    );
+    this.lightningOutlineColorSelect.addEventListener("change", (event) =>
+      changeLightningColor(this.lightningColorSelect.value, event.target.value)
     );
   }
 

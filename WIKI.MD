@@ -18,20 +18,22 @@
 
 **Fire** - spawns a fire underneath the dummy.
 
+**Lightning** - spawns a lightning ray that shocks the dummy. The lightning ray's color can be changed and moves with the camera.
+
 **Fus Ro Dah** - generates a repelling force that knocks the dummy in the direction the camera is facing
 
 **Golden Wind** - simulates the Giorno vs. Cioccolata fight from the anime JoJo's Bizarre Adventure where the dummy is Cioccolata
 
 # Keyboard Shortcuts
 
-**Escape** - opens the simulation settings panel
+**ESCAPE** - opens the simulation settings panel
 
-**r** - reload scene
+**R** - reload scene
 
-**d** - toggle dark mode
+**D** - toggle dark mode
 
-**p** - toggle pin dummy
+**P** - toggle pin dummy
 
-**,** - get previous interactions
+**,** or **Q** - get previous interactions
 
-**.** - get next interactions
+**.** or **E** - get next interactions
